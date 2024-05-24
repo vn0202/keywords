@@ -6,12 +6,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "cviebrock/eloquent-sluggable": "^11.0",
+        "google-gemini-php/client": "^1.0",
+        "hocvt/laravel-scout-elasticsearch": "^7.4",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "openai-php/client": "^0.9.0",
         "spatie/laravel-data": "^4.6"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.0",
         "fakerphp/faker": "^1.23",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -47,6 +52,11 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "ide-helper": [
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models --nowrite",
+            "@php artisan ide-helper:meta"
         ]
     },
     "extra": {

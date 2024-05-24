@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('keyword')->unique()->index();
             $table->string('slug')->unique()->nullable();
+            $table->string('type')->nullable();
+
 
             $table->string('country')->nullable()->default('vn');
             $table->string('source')->nullable()->default('Ahref');
+            $table->integer('status_pos')->default(0);
+
             $table->json('raw')->nullable();
             $table->json('meta')->nullable();
 

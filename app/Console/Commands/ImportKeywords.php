@@ -32,7 +32,7 @@ class ImportKeywords extends Command
         $this->output->title('Starting import');
         $id = $this->argument('id');
         $file = ImportFile::findOrFail($id);
-        (new KeywordImport($file))->withOutput($this->output)->import($file->path);
+        (new KeywordImport($file, "book"))->withOutput($this->output)->import($file->path);
 
 
         Excel::import(new KeywordImport($file), $file->path);
