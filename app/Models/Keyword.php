@@ -54,4 +54,21 @@ class Keyword extends Model
         return \Arr::only($data, ['id', 'refine_word']);
     }
 
+
+    public function getRefineWordAttribute()
+    {
+        $pos = $this->meta->pos;
+        $refine_word = [];
+        foreach ($pos as $part)
+        {
+
+            if(!in_array($part->word, Stopwords::STOPWORDS))
+            {
+                $refine_word[] = $part->word;
+            }
+        }
+        return implode(' ',$refine_word);
+    }
+
+
 }

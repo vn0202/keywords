@@ -10,7 +10,8 @@ class KeyWordMetaData extends  Data
 
     public function __construct(
         /** @var Collection<int, POSTaggingData> */
-        public ?Collection $pos = null
+        public ?Collection $pos = null,
+        public   $search_url = null,
     )
     {
     }
