@@ -51,7 +51,7 @@ class Keyword extends Model
         }
         $data['refine_word'] = implode(' ',$refine_word);
 
-        return \Arr::only($data, ['id', 'refine_word']);
+        return \Arr::only($data, ['id', 'refine_word', 'status_search', 'keyword']);
     }
 
 
