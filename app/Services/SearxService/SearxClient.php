@@ -2,13 +2,13 @@
 
 namespace App\Services\SearxService;
 
-use App\Models\Keyword;
 use App\Services\SearxService\Data\NaturalResults;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Utils;
+use GuzzleHttp\Promise;
 
 class SearxClient
 {
@@ -54,11 +54,69 @@ class SearxClient
         return $this->host;
     }
 
+    public function searchMultiple(string $engine = '', array $keywords = [], int $page = 1, int $per_page = 12)
+    {
+        $promises = [];
+        foreach ($keywords as $keyword){
+            $promises[$keyword['id']] = $this->searchAsyncWithRetry($engine, $keyword['keyword'], $page, $per_page);
+        }
+        $responses = Promise\Utils::settle($promises)->wait();
+        $results = [];
+        foreach ($responses as $id => $response) {
+            if (array_key_exists('value', $response)){
+                $response = Utils::jsonDecode($response['value']->getBody()->getContents(), true);
+                $natural_result = NaturalResults::from($response);
+                if ($natural_result->organic_results){
+                    $results[$id] = $natural_result->organic_results->toCollection()->map(function ($item)
+                    {
+                        return $item->url;
+                    })->toArray();
+                }else{
+                    $results[$id] = [];
+                }
+            }else{
+                $results[$id] = [];
+            }
+        }
 
+        return $results;
+    }
+
+    public function multi_search(string $engine = '',array $queries, int $page = 1, int $per_page = 100,$retry = 5)
+    {
+        $results = [];
+        $promises = [];
+        foreach ($queries as  $query)
+        {
+           $promises[$query['id']] = $this->searchAsyncWithRetry("google", $query['keyword'], $page, $per_page, $retry);
+        }
+
+           $responses =  Promise\Utils::settle($promises)->wait();
+
+            foreach ($responses as $key => $respon)
+            {
+                if(array_key_exists('value', $respon))
+                {
+
+                        $response = Utils::jsonDecode($respon['value']->getBody()->getContents(), true);
+
+                        $natural_result = NaturalResults::from($response);
+                        if ($natural_result->search_metadata->status == "ERROR") {
+                            throw new SearxException($natural_result->search_metadata->message);
+                        }
+                        $urls = $natural_result->organic_results->toCollection()->map(function ($items){
+                            return $items->url;
+                        });
+                        $results[$key] = $urls->toArray();
+                    }
+            }
+
+            return $results;
+
+    }
     public function search_concurrent(string $engine = '',array $queries, int $page = 1, int $per_page = 100,)
     {
-        dump($queries);
-        $retry = 3;
+        $retry = 5;
 
         $results = [];
 
@@ -105,12 +163,13 @@ class SearxClient
             $promise = $pool->promise();
 
             $promise->wait();
-dd($results);
             return $results;
         }catch (\Exception $e)
         {
             if ($retry) {
                 $retry--;
+
+                sleep(3);
                 goto start;
             }
             throw  $e;
@@ -142,11 +201,39 @@ dd($results);
         } catch (RequestException|SearxException $exception) {
             if ($retry) {
                 $retry--;
+                dump("This is $retry time");
                 goto start;
             }
 
             throw $exception;
         }
 
+    }
+
+    public function searchAsyncWithRetry(string $engine = '', string $query = '', int $page = 1, int $per_page = 100, $retry = 5) {
+        start:
+        try {
+            return $this->searchAsync($engine, $query, $page, $per_page);
+        } catch (RequestException|SearxException $exception) {
+            if ($retry) {
+                $retry--;
+                dump("This retry $retry");
+                goto start;
+            }
+
+            throw $exception;
+        }
+
+    }
+    public function searchAsync(string $engine = '', string $query = '', int $page = 1, int $per_page = 12)
+    {
+        return $this->client->getAsync('/search', [
+            'query' => [
+                'engine' => $engine,
+                'query' => $query,
+                'page' => $page,
+                'per_page' => $per_page
+            ]
+        ]);
     }
 }

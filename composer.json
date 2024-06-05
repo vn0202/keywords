@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "openai-php/client": "^0.9.0",
+        "orchid/platform": "^14.25",
         "spatie/laravel-data": "^4.6"
     },
     "require-dev": {

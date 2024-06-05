@@ -23,7 +23,7 @@ class KeywordImport implements ToModel, WithChunkReading, WithStartRow, WithProg
 
     public function model(array $row)
     {
-        $raw = RawKeyWordData::from(["keyword" => $row[0],"volume" => $row[1],"kw" => $row[2]]);
+        $raw = RawKeyWordData::from(["keyword" => $row[0],"volume" => $row[1],"kd" => $row[2]]);
         return new Keyword([
             'keyword' => $row[0],
             "source" => $this->file->source,
@@ -50,6 +50,6 @@ class KeywordImport implements ToModel, WithChunkReading, WithStartRow, WithProg
 
     public function uniqueBy()
     {
-        return 'email';
+        return 'keyword';
     }
 }

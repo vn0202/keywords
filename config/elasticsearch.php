@@ -14,7 +14,7 @@ return [
             env('SCOUT_PREFIX') . 'keywords' => [
                 'properties' => [
 
-                    'reduce_word' => [
+                    'refine_word' => [
                         'type' => 'text',
                         'analyzer' => 'standard',
                     ],
