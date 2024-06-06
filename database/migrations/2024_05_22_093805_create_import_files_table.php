@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('import_files', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
+
             $table->string('namespace')->nullable()->default(null);
             $table->string('source')->nullable()->default('Ahref');
             $table->string('country')->nullable()->default('vn');
             $table->string('path')->nullable();
             $table->json('meta')->nullable();
+            $table->integer('status')->default(0);
 
             $table->timestamps();
         });

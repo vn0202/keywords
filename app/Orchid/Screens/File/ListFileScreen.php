@@ -56,6 +56,8 @@ class ListFileScreen extends Screen
         return [
             Layout::table('files', [
                 TD::make('id'),
+
+                TD::make('name'),
                 TD::make('namespace'),
                 TD::make('source'),
                 TD::make('country'),

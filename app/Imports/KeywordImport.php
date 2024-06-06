@@ -27,6 +27,7 @@ class KeywordImport implements ToModel, WithChunkReading, WithStartRow, WithProg
         return new Keyword([
             'keyword' => $row[0],
             "source" => $this->file->source,
+            "file_id" => $this->file->id,
             "country" => $this->file->country,
             "raw" => $raw,
             "type" => $this->type,

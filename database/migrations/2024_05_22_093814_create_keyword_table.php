@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('keywords', function (Blueprint $table) {
             $table->id();
             $table->string('keyword')->index();
+            $table->integer("file_id")->index()->nullable();
             $table->string('slug')->nullable();
             $table->string('type')->nullable();
 
@@ -21,7 +22,6 @@ return new class extends Migration
             $table->string('country')->nullable()->default('vn');
             $table->string('source')->nullable()->default('Ahref');
             $table->integer('status_search')->default(0);
-//            $table->
             $table->integer('duplicate_id')->default(0);
 
             $table->json('raw')->nullable();
